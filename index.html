@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sus</title>
+    <link rel="icon" href="" type="image/jpg">
+    <style>
+
+        body {
+            position: relative;
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0; /* Optional: for better visibility */
+        }
+
+        .popup {
+            position: fixed;
+            top: 20%;
+            left: -300px; /* Initially out of the viewport */
+            width: 250px;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: left 0.5s ease; /* Smooth transition */
+        }
+
+        .popup.show {
+            left: 20px; /* Position in view */
+            animation: slideIn 0.5s forwards, slideOut 0.5s forwards 5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                left: -300px;
+            }
+            to {
+                left: 20px;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                left: 20px;
+            }
+            to {
+                left: -300px;
+            }
+        }
+
+        h1 {
+            background-color: hsl(84, 100%, 59%);
+            position: absolute; /* Use absolute for moving with left/top */
+            width: 16rem;
+            aspect-ratio: 1 / 1;
+            font-size: 6rem;
+            border-radius: 50%;
+            margin: 0; /* Remove default margin */
+            display: flex; /* Center content using flexbox */
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s ease; /* Smooth transition for manual movement */
+        }
+
+        p {
+            margin: 0; /* Remove default margin */
+        }
+
+        .move-up {
+            animation: moveUp 20s ease-in-out;
+        }
+
+        @keyframes moveUp {
+            0% {
+                top: var(--start-top);
+            }
+            3% {
+                top: calc(var(--start-top) - 50px);
+            }
+            10% {
+                display: none;
+            }
+            100% {
+                top: 80000px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="popup">Try and keep clicking on one of the arrow keys</div>
+    <h1>
+        <p class="text">&#128512;</p>
+    </h1>
+    <script>
+        const myH1 = document.querySelector("h1");
+        const myEmojiEl = document.querySelector("p");
+        const myEmoji = myEmojiEl.textContent;
+
+        // Initialize position considering the offset of transform: translate(-50%, -50%)
+        let posX = window.innerWidth / 2 - myH1.offsetWidth / 2;
+        let posY = window.innerHeight / 2 - myH1.offsetHeight / 2;
+
+        // Position element
+        myH1.style.left = `${posX}px`;
+        myH1.style.top = `${posY}px`;
+
+        document.addEventListener("keydown", e => {
+            console.log(e);
+
+            if (e.code === "Space") {
+                myH1.style.setProperty('--start-top', `${myH1.offsetTop}px`);
+                myH1.classList.remove("move-up");
+                // Trigger reflow
+                void myH1.offsetWidth;
+                myH1.classList.add("move-up");
+                myEmojiEl.textContent = `\u{1F92C}`;
+                myH1.style.backgroundColor = `hsl(275, 82%, 49%)`;
+                e.preventDefault()
+            }
+
+            if (e.key.startsWith("Arrow")) {
+                myH1.style.backgroundColor = "hsl(7, 100%, 69%)";
+                myEmojiEl.textContent = "\u{1F632}";
+                switch (e.key) {
+                    case "ArrowLeft":
+                        posX -= 10;
+                        break;
+                    case "ArrowRight":
+                        posX += 10;
+                        break;
+                    case "ArrowUp":
+                        posY -= 10;
+                        break;
+                    case "ArrowDown":
+                        posY += 10;
+                        break;
+                    default:
+                        break;
+                }
+                myH1.style.left = `${posX}px`;
+                myH1.style.top = `${posY}px`;
+            }
+        });
+
+        document.addEventListener("keyup", e => {
+            console.log(e);
+            if (e.code !== "Space") {
+                myH1.style.backgroundColor = "hsl(84, 100%, 59%)";
+                myEmojiEl.textContent = myEmoji;
+            }
+        });
+
+        let secondAppearance = false;
+
+        function showPopup() {
+            const popup = document.querySelector('.popup');
+            
+            // Clear any previous animation classes
+            popup.classList.remove('show');
+            popup.offsetWidth; // Trigger a reflow to reset the animation
+            if (secondAppearance)
+            popup.textContent = "No matter what happens don't click space";
+            popup.classList.add('show');
+
+            secondAppearance = true;
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 5500); // 5s for visibility + 0.5s for slide-in animation
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showPopup(); // Show popup initially
+
+            // Re-show popup after 8 seconds
+            setTimeout(() => {
+                showPopup();
+            }, 15000); // 8 seconds delay before showing again
+        });
+
+    </script>
+</body>
+</html>
